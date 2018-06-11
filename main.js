@@ -1,13 +1,36 @@
+const {app, BrowserWindow} = require('electron')
 var AudioContext = require('web-audio-api').AudioContext
 context = new AudioContext
 var fs = require('fs')
-var exec = require('child_process').exec;
-var _ = require('underscore');
+var ffbinaries = require('ffbinaries');
 
-var pcmdata = [] ;
+let win;
 
-decodeMp3("black.mp3");
+function createWindow() {
+  win = new BrowserWindow({ width: 800, height: 600});
+  win.loadFile('index.html');
+  win.webContents.openDevTools();
+  downloadFfBinaries();
+}
 
+app.on('ready', createWindow);
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+});
+
+app.on('activate', () => {
+  if (win === null) {
+    createWindow();
+  }
+});
+
+/** FUNCTIONS **/
+function downloadFfBinaries() {
+  console.log(ffbinaries.locateBinariesSync(['ffmpeg']));
+}
 
 function decodeMp3(mp3){
   console.log("Decoding " + mp3)
@@ -18,9 +41,9 @@ function decodeMp3(mp3){
       console.log("Frame Length: " + audioBuffer.length);
       console.log("Sample Rate: " + audioBuffer.sampleRate);
       console.log("Duration (Seconds): " + audioBuffer.duration);
-      pcmData = (audioBuffer.getChannelData(0));
-      var peaks = findPeaks(pcmData, audioBuffer);
-      console.log(peaks);
+      var pcmData = (audioBuffer.getChannelData(0));
+      var start = findPeaks(pcmData, audioBuffer);
+      console.log(start);
     }, function(err) { throw err })
   })
 }
@@ -36,7 +59,7 @@ function findPeaks(pcmData, audioBuffer) {
   var threshold = 0.3;
 
   for (var i = 0; i < levels.length; i++) {
-    if (firstNoiseTime === 0) {
+    if (firstNoiseTime === 0 && levels[i].value > 0.01) {
       firstNoiseTime = levels[i].time;
       firstNoiseLevel = levels[i].value;
     }
@@ -51,7 +74,13 @@ function findPeaks(pcmData, audioBuffer) {
     previousVolume = currentVolume;
   }
 
-  return peaks;
+  if (peaks[0].time - firstNoiseTime > 5000) {
+      var start = firstNoiseTime;
+  } else {
+    var start = peaks[0].time;
+  }
+
+  return start;
 }
 
 function getLevels(pcmData, audioBuffer, interval) {
