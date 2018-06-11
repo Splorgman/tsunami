@@ -29,7 +29,9 @@ app.on('activate', () => {
 
 /** FUNCTIONS **/
 function downloadFfBinaries() {
-  console.log(ffbinaries.locateBinariesSync(['ffmpeg']));
+  ffbinaries.downloadBinaries(['ffmpeg', {}], function() {
+    console.log("Downloaded ffmpeg");
+  });
 }
 
 function decodeMp3(mp3){
