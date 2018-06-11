@@ -17,3 +17,7 @@ document.querySelector('#selectBtn').addEventListener('click', function (event) 
         }
     });
 });
+
+document.querySelector('#convert').addEventListener('click', function (event) {
+	alert("We are going to convert your MP3s!");
+});
