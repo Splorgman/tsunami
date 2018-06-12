@@ -35,6 +35,7 @@ ipcMain.on('tempo', (event, arg) => {
 /** FUNCTIONS **/
 function createWindow() {
   win = new BrowserWindow({ width: 1280, height: 1024});
+  win.setMenu(null);
   win.loadFile('index.html');
   win.webContents.openDevTools();
   downloadFfBinaries();

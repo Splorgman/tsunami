@@ -6,7 +6,7 @@ A tool for resident DJs of TheWaveVR, to simplify setting the offset on MP3 file
 
 You don't, yet. It doesn't work.
 
-### Credits
+# Credits
 
 * Tsunami icon by freepik.com
 * Tempo conversion by ffmpeg.com

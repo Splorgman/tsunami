@@ -2,26 +2,63 @@
   <html>
     <head>
       <meta charset="UTF-8">
+      <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
       <link rel="stylesheet" href="main.css">
       <title>Tsunami</title>
     </head>
     <body>
-      <div>
-        <button id="outputDirectory">Select output directory</button>
+      <div class="container-fluid" id="topbar">
+        <div class="row p-4">
+          <div class="col-sm">
+            <object type="image/svg+xml" data="tsunami.svg" width="75" height="75"></object>
+          </div>
+          <div class="col-sm mt-3">
+            <button id="selectBtn" class="button btn-primary btn-lg">Add MP3s</button>
+            <button id="outputDirectory"" class="button btn-primary btn-lg ml-4">Select output directory</button>
+          </div>
+        </div>
       </div>
-      <div id="outputDirectoryDisplay"></div>
-      <div>
-        <button id="selectBtn">Add MP3s</button>
+      <div class="container-fluid" id="config">
+        <div class="row p-4">
+          <div class="col-sm mt-3" id="outputDirectoryDisplay">No output directory is currently set. Please click <strong>Select output directory</strong> to set one.</div>
+          <div class="col-sm">
+            <form>
+              <div class="form-row align-items-center">
+                <div class="col-auto">
+                  <label class="sr-only" for="bpm">BPM</label>
+                  <input type="text" class="form-control mb-2" id="bpm" placeholder="Enter new BPM">
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-primary mb-2" id="convert">Convert</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <div id="selectedMp3s">
-      </div>
-      <div>
-        <label>BPM</label>
-        <input type="number" id="bpm">
-      </div>
-      <button id="convert">Convert</button>
+      <button type="submit" class="btn btn-danger m-2">Remove selected MP3s from conversion list</button>
+      <div class="m-2">
+        <form id="mp3List">
+          
+        </form>
+      </div>      
       <div id="messages"></div>
     </body>
     <script>window.$ = window.jQuery = require('jquery');</script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="app.js"></script>
+    <script id="mp3Template" type="text/x-handlebars-template">
+      <div class="form-row align-items-center">
+        <div class="col-auto my-1">
+          <div class="form-check">
+            <input class="form-check-input mp3Delete" type="checkbox" id="{{id}}">
+            <label class="form-check-label" for="{{id}}">
+              {{mp3Path}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </script>
   </html>
+
+  
