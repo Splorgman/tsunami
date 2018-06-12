@@ -1,18 +1,14 @@
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 var AudioContext = require('web-audio-api').AudioContext
 context = new AudioContext
 var fs = require('fs')
 var ffbinaries = require('ffbinaries');
+var nodeid3 = require('node-id3');
+var exec = require('child_process').execSync;
 
 let win;
 
-function createWindow() {
-  win = new BrowserWindow({ width: 800, height: 600});
-  win.loadFile('index.html');
-  win.webContents.openDevTools();
-  downloadFfBinaries();
-}
-
+/** INITIAL SETUP **/
 app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
@@ -27,14 +23,80 @@ app.on('activate', () => {
   }
 });
 
+/** EVENTS **/
+ipcMain.on('tempo', (event, arg) => {
+  for (var i = 0; i < arg.mp3s.length; i++) {
+    var result = adjustTempo(arg.mp3s[i], arg.bpm, arg.directory);
+  }
+  console.log(arg);
+  event.returnValue = true; //todo: fix this
+});
+
 /** FUNCTIONS **/
+function createWindow() {
+  win = new BrowserWindow({ width: 1280, height: 1024});
+  win.loadFile('index.html');
+  win.webContents.openDevTools();
+  downloadFfBinaries();
+}
+
+function adjustTempo(file, bpm, directory) {
+  console.log('\x1b[36m',"Converting " + file);
+  var tags = nodeid3.read(file, function(err, tags) {
+    var outputPath = directory + "/" + tags.artist + ' - ' + tags.title + '.mp3';
+    var existingBpm = tags.bpm;
+
+    if (existingBpm != bpm) {
+      console.log("Existing BPM is " + existingBpm + ", updating to " + bpm);
+
+      var tempoChange = bpm / existingBpm;
+      
+      console.log("Tempo change is " + tempoChange + ', writing to ' + outputPath);
+
+      var args = [
+        '-i', file,
+        '-filter:a', 'atempo=' + tempoChange,
+        outputPath
+      ];
+
+      var ffmpegPath = ffbinaries.getBinaryFilename('ffmpeg');
+
+      console.log("Running " + ffmpegPath + ' -y -i "' + file + '" -vsync 2 -q:a 0 -filter:a "atempo=' + tempoChange + '" -vn "' + outputPath + '"');
+
+      exec(ffmpegPath + ' -y -i "' + file + '" -vsync 2 -q:a 0 -filter:a "atempo=' + tempoChange + '" -vn "' + outputPath + '"', (error, stdout, stderr) => {
+        if (error) {
+          console.error('Error: ' + error);
+          return;
+        }
+      });
+
+      //I rewrite the album art here, because ffmpeg seems to chew it up.
+      var newTags = {
+        "bpm": bpm,
+        "APIC": tags.raw.APIC
+      }
+
+      var success = nodeid3.update(newTags, outputPath);
+      if (success !== true) {
+        console.log('\x1b[31m',"Failed to update " + outputPath);
+      }
+
+      findAndSetOffset(outputPath);
+
+    } else {
+      console.log("Copying " + file + " to " + outputPath);
+      fs.copySync(file, outputPath);
+    }
+  });
+}
+
 function downloadFfBinaries() {
   ffbinaries.downloadBinaries(['ffmpeg', {}], function() {
     console.log("Downloaded ffmpeg");
   });
 }
 
-function decodeMp3(mp3){
+function findAndSetOffset(mp3){
   console.log("Decoding " + mp3)
   fs.readFile(mp3, function(err, buf) {
     if (err) throw err
@@ -44,13 +106,24 @@ function decodeMp3(mp3){
       console.log("Sample Rate: " + audioBuffer.sampleRate);
       console.log("Duration (Seconds): " + audioBuffer.duration);
       var pcmData = (audioBuffer.getChannelData(0));
-      var start = findPeaks(pcmData, audioBuffer);
+      var start = findStart(pcmData, audioBuffer);
       console.log(start);
+      var tags = {
+          "COMM": {
+            "language": "eng",
+            "text": '{"Offset": ' + start + '}'
+          }
+        }
+
+        var success = nodeid3.update(tags, mp3);
+        if (success !== true) {
+          console.log('\x1b[31m',"Failed to update " + mp3);
+        }
     }, function(err) { throw err })
   })
 }
 
-function findPeaks(pcmData, audioBuffer) {
+function findStart(pcmData, audioBuffer) {
   var levels = getLevels(pcmData, audioBuffer, 10);
 
   var firstNoiseTime = 0;

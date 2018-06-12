@@ -1,6 +1,8 @@
 const {dialog} = require('electron').remote;
+const {ipcRenderer} = require('electron');
 
 var mp3s = [];
+var outputDirectory = null;
 
 document.querySelector('#selectBtn').addEventListener('click', function (event) {
     dialog.showOpenDialog({
@@ -18,6 +20,23 @@ document.querySelector('#selectBtn').addEventListener('click', function (event) 
     });
 });
 
+document.querySelector('#outputDirectory').addEventListener('click', function (event) {
+    dialog.showOpenDialog({
+        properties: ['openDirectory']
+    }, function (directory) {
+        if (directory !== undefined) {
+        	outputDirectory = directory;
+        	$("#outputDirectoryDisplay").html("Outputting files to " + directory);
+        }
+    });
+});
+
 document.querySelector('#convert').addEventListener('click', function (event) {
-	alert("We are going to convert your MP3s!");
+	$("#messages").html("Converting MP3s, please be patient...");
+	var result = ipcRenderer.sendSync('tempo',{ "mp3s": mp3s, "bpm": $("#bpm").val(), "directory": outputDirectory});
+	if (result === true) {
+		$("#messages").html("Files converted!");
+	} else {
+		$("#messages").html("Could not convert files :(");
+	}
 });

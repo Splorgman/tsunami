@@ -6,14 +6,22 @@
       <title>Tsunami</title>
     </head>
     <body>
-      <button id="selectBtn">Add MP3s</button>
+      <div>
+        <button id="outputDirectory">Select output directory</button>
+      </div>
+      <div id="outputDirectoryDisplay"></div>
+      <div>
+        <button id="selectBtn">Add MP3s</button>
+      </div>
       <div id="selectedMp3s">
       </div>
       <div>
         <label>BPM</label>
-        <input type="number">
+        <input type="number" id="bpm">
       </div>
       <button id="convert">Convert</button>
+      <div id="messages"></div>
     </body>
+    <script>window.$ = window.jQuery = require('jquery');</script>
     <script type="text/javascript" src="app.js"></script>
   </html>

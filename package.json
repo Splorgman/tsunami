@@ -5,6 +5,8 @@
   "main": "main.js",
   "dependencies": {
     "ffbinaries": "^1.1.0",
+    "jquery": "^3.3.1",
+    "node-id3": "^0.1.5",
     "underscore": "^1.9.1",
     "web-audio-api": "^0.2.2"
   },
