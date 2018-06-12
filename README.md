@@ -8,6 +8,6 @@ You don't, yet. It doesn't work.
 
 ### Credits
 
-Tsunami icon by freepik.com
-Tempo conversion by ffmpeg.com
-App built using electronjs.org
+* Tsunami icon by freepik.com
+* Tempo conversion by ffmpeg.com
+* App built using electronjs.org
