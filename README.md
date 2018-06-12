@@ -5,3 +5,9 @@ A tool for resident DJs of TheWaveVR, to simplify setting the offset on MP3 file
 # How do I use it?
 
 You don't, yet. It doesn't work.
+
+### Credits
+
+Tsunami icon by freepik.com
+Tempo conversion by ffmpeg.com
+App built using electronjs.org
