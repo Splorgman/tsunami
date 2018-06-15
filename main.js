@@ -35,7 +35,6 @@ function createWindow() {
   win = new BrowserWindow({ width: 1280, height: 1024});
   win.setMenu(null);
   win.loadFile('index.html');
-  win.webContents.openDevTools();
   downloadFfBinaries();
 }
 
@@ -66,6 +65,7 @@ function adjustTempo(file, bpm, directory, event, position) {
       const child = exec(ffmpegPath + ' -y -i "' + file + '" -vsync 2 -q:a 0 -filter:a "atempo=' + tempoChange + '" -vn "' + outputPath + '"');
       child.on('exit', function (code, signal) {
         if (signal === null) {
+          console.log("Signal was null, rewriting offset");
           var newTags = {
             "bpm": bpm,
             "APIC": tags.raw.APIC
@@ -76,6 +76,8 @@ function adjustTempo(file, bpm, directory, event, position) {
             console.log('\x1b[31m',"Failed to update " + outputPath);
           }
           rewriteOffset(outputPath, event, position);
+        } else {
+          console.log("SIGNAL WAS NOT NULL!");
         }
       });
     } else {

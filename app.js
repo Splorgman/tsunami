@@ -61,7 +61,6 @@ $(document).ready(function(){
                 $("#mp3Status" + i).html("Queued for conversion...");
             }
             ipcRenderer.on('tempo-reply', (event, arg) => {
-                console.log(arg);
                 var position = arg.position;
                 if (arg.status == "tempo-complete") {
                     $("#mp3Status" + position).html("Tempo adjustment complete!");
@@ -78,6 +77,7 @@ $(document).ready(function(){
                     $(".btn").prop('disabled',false);
                     $("#mp3List").html('');
                     $("#messages").html("All MP3s converted!");
+                    mp3s = [];
                 }
             });
 
