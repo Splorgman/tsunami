@@ -48,13 +48,16 @@
     <script type="text/javascript" src="bootstrap/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <script id="mp3Template" type="text/x-handlebars-template">
-      <div class="form-row align-items-center">
+      <div class="form-row align-items-center" id="{{mp3id}}">
         <div class="col-auto my-1">
           <div class="form-check">
             <input class="form-check-input mp3Delete" type="checkbox" id="{{id}}">
             <label class="form-check-label" for="{{id}}">
               {{mp3Path}}
             </label>
+            <small id="{{mp3StatusID}}" class="form-text text-muted">
+              
+            </small>
           </div>
         </div>
       </div>

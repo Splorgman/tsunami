@@ -26,10 +26,8 @@ app.on('activate', () => {
 /** EVENTS **/
 ipcMain.on('tempo', (event, arg) => {
   for (var i = 0; i < arg.mp3s.length; i++) {
-    var result = adjustTempo(arg.mp3s[i], arg.bpm, arg.directory);
+    var result = adjustTempo(arg.mp3s[i], arg.bpm, arg.directory, event, i);
   }
-  console.log(arg);
-  event.returnValue = true; //todo: fix this
 });
 
 /** FUNCTIONS **/
@@ -41,7 +39,7 @@ function createWindow() {
   downloadFfBinaries();
 }
 
-function adjustTempo(file, bpm, directory) {
+function adjustTempo(file, bpm, directory, event, position) {
   console.log('\x1b[36m',"Converting " + file);
   var tags = nodeid3.read(file, function(err, tags) {
     var outputPath = directory + "/" + tags.artist + ' - ' + tags.title + '.mp3';
@@ -82,12 +80,20 @@ function adjustTempo(file, bpm, directory) {
         console.log('\x1b[31m',"Failed to update " + outputPath);
       }
 
+      event.sender.send('tempo-reply', { position: position, status: 'tempo-complete' });
+
+      event.sender.send('tempo-reply', { position: position, status: 'offset-start' });
+
       findAndSetOffset(outputPath);
+
+      event.sender.send('tempo-reply', { position: position, status: 'offset-complete' });
 
     } else {
       console.log("Copying " + file + " to " + outputPath);
       fs.copySync(file, outputPath);
     }
+
+    event.sender.send('tempo-reply', { position: position, status: 'complete' });
   });
 }
 
