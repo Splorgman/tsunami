@@ -23,7 +23,8 @@ $(document).ready(function(){
                 for (var i = 0; i < files.length; i++) {
                     if (mp3s.indexOf(files[i]) === -1) {
                         mp3s.push(files[i]);
-                        var context = {id: i, mp3id: "mp3" + i, mp3StatusID: "mp3Status" + i, mp3Path: files[i]};
+                        var position = mp3s.length - 1;
+                        var context = {id: position, mp3id: "mp3" + position, mp3StatusID: "mp3Status" + position, mp3Path: files[i], position: position};
                         var html = template(context);
                         $("#mp3List").append(html);
                     }
@@ -58,9 +59,12 @@ $(document).ready(function(){
                 $("#mp3Status" + i).html("Queued for conversion...");
             }
             ipcRenderer.on('tempo-reply', (event, arg) => {
+                console.log(arg);
                 var position = arg.position;
                 if (arg.status == "tempo-complete") {
                     $("#mp3Status" + position).html("Tempo adjustment complete!");
+                } else if (arg.status == "tempo-start") {
+                    $("#mp3Status" + position).html("Starting tempo adjustment...");
                 } else if (arg.status == "offset-start") {
                     $("#mp3Status" + position).html("Starting offset calculation...");
                 } else if (arg.status == "offset-complete") {

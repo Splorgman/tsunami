@@ -4,7 +4,7 @@ context = new AudioContext
 var fs = require('fs')
 var ffbinaries = require('ffbinaries');
 var nodeid3 = require('node-id3');
-var exec = require('child_process').execSync;
+const { exec } = require('child_process');
 
 let win;
 
@@ -62,39 +62,33 @@ function adjustTempo(file, bpm, directory, event, position) {
 
       console.log("Running " + ffmpegPath + ' -y -i "' + file + '" -vsync 2 -q:a 0 -filter:a "atempo=' + tempoChange + '" -vn "' + outputPath + '"');
 
-      exec(ffmpegPath + ' -y -i "' + file + '" -vsync 2 -q:a 0 -filter:a "atempo=' + tempoChange + '" -vn "' + outputPath + '"', (error, stdout, stderr) => {
-        if (error) {
-          console.error('Error: ' + error);
-          return;
+      event.sender.send('tempo-reply', { position: position, status: 'tempo-start' });
+      const child = exec(ffmpegPath + ' -y -i "' + file + '" -vsync 2 -q:a 0 -filter:a "atempo=' + tempoChange + '" -vn "' + outputPath + '"');
+      child.on('exit', function (code, signal) {
+        if (signal === null) {
+          var newTags = {
+            "bpm": bpm,
+            "APIC": tags.raw.APIC
+          }
+
+          var success = nodeid3.update(newTags, outputPath);
+          if (success !== true) {
+            console.log('\x1b[31m',"Failed to update " + outputPath);
+          }
+          rewriteOffset(outputPath, event, position);
         }
       });
-
-      //I rewrite the album art here, because ffmpeg seems to chew it up.
-      var newTags = {
-        "bpm": bpm,
-        "APIC": tags.raw.APIC
-      }
-
-      var success = nodeid3.update(newTags, outputPath);
-      if (success !== true) {
-        console.log('\x1b[31m',"Failed to update " + outputPath);
-      }
-
-      event.sender.send('tempo-reply', { position: position, status: 'tempo-complete' });
-
-      event.sender.send('tempo-reply', { position: position, status: 'offset-start' });
-
-      findAndSetOffset(outputPath);
-
-      event.sender.send('tempo-reply', { position: position, status: 'offset-complete' });
-
     } else {
       console.log("Copying " + file + " to " + outputPath);
       fs.copySync(file, outputPath);
     }
-
-    event.sender.send('tempo-reply', { position: position, status: 'complete' });
   });
+}
+
+function rewriteOffset(file, event, position) {
+  event.sender.send('tempo-reply', { position: position, status: 'offset-start' });
+  findAndSetOffset(file);
+  event.sender.send('tempo-reply', { position: position, status: 'offset-complete' });
 }
 
 function downloadFfBinaries() {
