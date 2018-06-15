@@ -10,6 +10,7 @@ $(document).ready(function(){
     var template = Handlebars.compile(source);
 
     document.querySelector('#selectBtn').addEventListener('click', function (event) {
+        $("#messages").html('');
         dialog.showOpenDialog({
             properties: ['openFile', 'multiSelections'],
             filters: [
@@ -24,7 +25,7 @@ $(document).ready(function(){
                     if (mp3s.indexOf(files[i]) === -1) {
                         mp3s.push(files[i]);
                         var position = mp3s.length - 1;
-                        var context = {id: position, mp3id: "mp3" + position, mp3StatusID: "mp3Status" + position, mp3Path: files[i], position: position};
+                        var context = {id: position, mp3id: "mp3" + position, mp3StatusID: "mp3Status" + position, mp3Path: files[i]};
                         var html = template(context);
                         $("#mp3List").append(html);
                     }
@@ -46,6 +47,7 @@ $(document).ready(function(){
     });
 
     document.querySelector('#convert').addEventListener('click', function (event) {
+        var count = 0;
         $("#messages").html('');
         if ($("#bpm").val() == '' || parseInt($("#bpm").val()) < 80 || parseInt($("#bpm").val()) > 200) {
             alert("Please select a BPM between 80 and 200.");
@@ -69,6 +71,13 @@ $(document).ready(function(){
                     $("#mp3Status" + position).html("Starting offset calculation...");
                 } else if (arg.status == "offset-complete") {
                     $("#mp3Status" + position).html("Offset adjustment complete!");
+                    count = count + 1;
+                }
+
+                if (count == mp3s.length) {
+                    $(".btn").prop('disabled',false);
+                    $("#mp3List").html('');
+                    $("#messages").html("All MP3s converted!");
                 }
             });
 
