@@ -71,6 +71,9 @@ $(document).ready(function(){
                 } else if (arg.status == "offset-complete") {
                     $("#mp3Status" + position).html("Offset adjustment complete!");
                     count = count + 1;
+                } else if (arg.status == "failed") {
+                    $("#mp3Status" + position).html("There was a failure during tempo conversion :(");
+                    count = count + 1;
                 }
 
                 if (count == mp3s.length) {
