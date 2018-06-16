@@ -109,10 +109,10 @@ function adjustTempo(file, bpm, directory, event, position) {
         fs.copyFile(file, outputPath, (err) => {
           if (err) {
             console.log("Error copying file: " + err);
-            setTimeout(function(){
+          }
+          setTimeout(function(){
             rewriteOffset(outputPath, event, position);
           },3000);
-          }
         });
       }
     });
