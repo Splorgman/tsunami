@@ -50,6 +50,11 @@ function adjustTempo(file, bpm, directory, event, position) {
     var tags = nodeid3.read(file, function(err, tags) {
       var outputPath = directory + "/" + tags.artist + ' - ' + tags.title + '.mp3';
       var existingBpm = tags.bpm;
+      if (existingBpm == '') {
+        event.sender.send('tempo-reply', { position: position, status: 'no-bpm' });
+        runningProcesses -= 1;
+        return;
+      }
 
       if (existingBpm != bpm) {
         console.log("Existing BPM is " + existingBpm + ", updating to " + bpm);

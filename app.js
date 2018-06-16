@@ -74,6 +74,9 @@ $(document).ready(function(){
                 } else if (arg.status == "failed") {
                     $("#mp3Status" + position).html("There was a failure during tempo conversion :(");
                     count = count + 1;
+                } else if (arg.status == "no-bpm") {
+                    $("#mp3Status" + position).html("This MP3 needs an initial BPM set in its ID3 tag.");
+                    count = count + 1;
                 }
 
                 if (count == mp3s.length) {
