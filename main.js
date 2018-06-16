@@ -107,6 +107,9 @@ function adjustTempo(file, bpm, directory, event, position) {
       } else {
         console.log("Copying " + file + " to " + outputPath);
         fs.copySync(file, outputPath);
+        setTimeout(function(){
+          rewriteOffset(outputPath, event, position);
+        },3000);
       }
     });
   } else {
