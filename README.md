@@ -11,7 +11,7 @@ A tool for resident DJs of TheWaveVR, to simplify setting the offset on MP3 file
 
 # This sucks or I want to tell you something about it sucks.
 
-[Come say hi](https://discordapp.com/invite/thewavevr) on Discord. Or feel free to make a pull request. This is the first Electron app I've ever made, so it probably does suck. It is still a lot better than doing tempo conversion and offset calculation by hand though!
+[Come say hi](https://discordapp.com/invite/thewavevr) on Discord (I'm Splorgman.) Or feel free to make a pull request. This is the first Electron app I've ever made, so it probably does suck. It is still a lot better than doing tempo conversion and offset calculation by hand though!
 
 # Credits
 
