@@ -26,7 +26,7 @@ fs.readFile(mp3, function(err, buf) {
     var success = nodeid3.update(tags, mp3);
     if (success !== true) {
       console.log('\x1b[31m',"Failed to update " + mp3);
-      exit(0);
+      exit(5);
     }
   }, function(err) { throw err })
 });

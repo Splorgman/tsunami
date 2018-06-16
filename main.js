@@ -105,6 +105,7 @@ function adjustTempo(file, bpm, directory, event, position) {
           }
         });
       } else {
+        runningProcesses -= 1;
         console.log("Copying " + file + " to " + outputPath);
         fs.copyFile(file, outputPath, (err) => {
           if (err) {
@@ -129,7 +130,7 @@ function rewriteOffset(file, event, position) {
   event.sender.send('tempo-reply', { position: position, status: 'offset-start' });
   if (runningOffsetProcesses < 2) {
     console.log("Calling offset.js with " + file);
-    var process = spawn('node', ['./offset.js', file]);
+    var process = spawn('node', ['./offset.js ', file]);
     process.on('exit', function() {
       event.sender.send('tempo-reply', { position: position, status: 'offset-complete' });
     })
