@@ -15,6 +15,6 @@ A tool for resident DJs of TheWaveVR, to simplify setting the offset on MP3 file
 
 # Credits
 
-* Tsunami icon by (freepik.com)[http://freepik.com]
-* Tempo conversion by (ffmpeg.com)[http://ffmpeg.com]
-* App built using (electronjs.org)[http://electronjs.org]
+* Tsunami icon by [freepik.com](http://freepik.com)
+* Tempo conversion by [ffmpeg.com](http://ffmpeg.com)
+* App built using [electronjs.org](http://electronjs.org)
