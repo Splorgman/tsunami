@@ -106,10 +106,14 @@ function adjustTempo(file, bpm, directory, event, position) {
         });
       } else {
         console.log("Copying " + file + " to " + outputPath);
-        fs.copySync(file, outputPath);
-        setTimeout(function(){
-          rewriteOffset(outputPath, event, position);
-        },3000);
+        fs.copyFile(file, outputPath, (err) => {
+          if (err) {
+            console.log("Error copying file: " + err);
+            setTimeout(function(){
+            rewriteOffset(outputPath, event, position);
+          },3000);
+          }
+        });
       }
     });
   } else {
@@ -124,6 +128,7 @@ function adjustTempo(file, bpm, directory, event, position) {
 function rewriteOffset(file, event, position) {
   event.sender.send('tempo-reply', { position: position, status: 'offset-start' });
   if (runningOffsetProcesses < 2) {
+    console.log("Calling offset.js with " + file);
     var process = spawn('node', ['./offset.js', file]);
     process.on('exit', function() {
       event.sender.send('tempo-reply', { position: position, status: 'offset-complete' });

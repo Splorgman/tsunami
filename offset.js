@@ -16,17 +16,18 @@ fs.readFile(mp3, function(err, buf) {
     var start = findStart(pcmData, audioBuffer);
     console.log(start);
     var tags = {
-        "COMM": {
-          "language": "eng",
-          "text": '{"Offset": ' + start + '}'
-        }
+      "COMM": {
+        "language": "eng",
+        "text": '{"Offset": ' + start + '}'
       }
+    }
 
-      var success = nodeid3.update(tags, mp3);
-      if (success !== true) {
-        console.log('\x1b[31m',"Failed to update " + mp3);
-        exit(0);
-      }
+    console.log("Setting offset to " + start + " on " + mp3);
+    var success = nodeid3.update(tags, mp3);
+    if (success !== true) {
+      console.log('\x1b[31m',"Failed to update " + mp3);
+      exit(0);
+    }
   }, function(err) { throw err })
 });
 
