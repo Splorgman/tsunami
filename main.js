@@ -53,6 +53,7 @@ function adjustTempo(file, bpm, directory, event, position) {
     var tags = nodeid3.read(file, function(err, tags) {
       var outputPath = directory + "/" + tags.artist + ' - ' + tags.title + '.mp3';
       var existingBpm = tags.bpm;
+      //TODO: this is an invalid test, need to figure out how to actually find an MP3 with no BPM set.
       if (existingBpm == '') {
         event.sender.send('tempo-reply', { position: position, status: 'no-bpm' });
         runningProcesses -= 1;
